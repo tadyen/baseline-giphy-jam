@@ -4,20 +4,20 @@ import { giphyApiKey } from "../config/consts";
 import axios, { AxiosError } from "axios";
 
 
-// https://developers.giphy.com/docs/api/endpoint/#trending
+// https://developers.giphy.com/docs/api/endpoint/#search
 type giphyConfigType = {
   baseUrl: string,
   apiKey: string,
   limit?: number,   // max terms returned
   offset?: number   // search offset
-  rating?: "y" | "g" | "pg" | "pg-13" | "r",
+  rating?: "g" | "pg" | "pg-13" | "r",
   bundle?: "clips_grip_picker" | "messaging_non_clips" | "sticker_layering" | "low_bandwidth",
 }
 const giphyConfig: giphyConfigType = {
   apiKey: giphyApiKey,
-  baseUrl: "https://api.giphy.com/v1/gifs/trending",
+  baseUrl: "https://api.giphy.com/v1/gifs/search",
   limit: 5,
-  rating: "y",
+  rating: "g",
 }
 
 function toQueryURL(query: string | undefined): string | undefined{
@@ -52,10 +52,7 @@ type giphyGetResponse = {
   }
 }
 
-
-
 export const giphyController = {
-
   get: async (query: string | undefined)=>{
     const queryURL = toQueryURL(query);
     if (!queryURL) return undefined;
@@ -68,5 +65,4 @@ export const giphyController = {
       return error
     }
   }
-
 }
