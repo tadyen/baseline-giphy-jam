@@ -1,12 +1,11 @@
 import * as React from 'react';
 import './App.css';
-import SearchBar from './components/SearchBar';
-import GifDeck from './components/GifDeck';
+import GiphySearch from './components/GiphySearch';
 
 function App() {
   return (
     <div className="app">
-      <SearchBar />
+      <GiphySearch />
     </div>
   );
 }

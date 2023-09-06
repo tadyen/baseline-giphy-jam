@@ -1,7 +1,7 @@
 // api controller for giphy search bar
 
 import { giphyApiKey } from "../config/consts";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 
 // https://developers.giphy.com/docs/api/endpoint/#search
@@ -31,15 +31,15 @@ function toQueryURL(query: string | undefined): string | undefined{
   return queryString
 }
 // https://developers.giphy.com/docs/api/schema/#gif-object
-type giphyJsonData = {
+export type giphyResponseDataType = {
   type: string,
   id: string,
   slug: string,
   url: string,
   bitly_url: string,
 }
-type giphyGetResponse = {
-  data: giphyJsonData[],
+export type giphyResponseType = {
+  data: giphyResponseDataType[],
   pagination: {
     total_count: number,
     count: number,
@@ -53,13 +53,13 @@ type giphyGetResponse = {
 }
 
 export const giphyController = {
-  get: async (query: string | undefined)=>{
+  get: async (query: string | undefined): Promise<giphyResponseType | undefined>=>{
     const queryURL = toQueryURL(query);
     if (!queryURL) return undefined;
     console.log(queryURL);
     try {
       const response = await axios.get(queryURL);
-      return response.data;
+      return response.data as giphyResponseType;
     } catch(error){
       console.error(error)
       return error
