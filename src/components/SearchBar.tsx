@@ -54,21 +54,22 @@ export default function SearchBar(){
   const [response, setResponse] = React.useState();
 
   React.useEffect(()=>{
-    if (inputPause) return;
-
-    // 500ms pause between issuing search
+    const delay = 1000; //delay in ms between search input ingestion
     setInputPause(true);
     setTimeout(() => {
       setInputPause(false);
-    }, 500);
-
-    const response = giphyController.get(query);
-    console.log("asdf")
-    response.then((response)=>{
-      console.log(response)
-    })
+    }, delay);
   },[query])
 
+  React.useEffect(()=>{
+    if( inputPause ) return;
+    console.log(query)
+    const response = giphyController.get(query);
+    response.then((result)=>{
+      console.log(result)
+    })
+
+  },[inputPause])
 
   return(
   <>
