@@ -40,7 +40,9 @@ function SearchBar({props}: {props: SearchBarPropsType}){
   const [inputPause, setInputPause] = React.useState<boolean>(false);
 
   React.useEffect(()=>{
-    const delay = 1000; //delay in ms between search input ingestion
+    // TBD: Add hysteresis to delay from last input rather than at each delay frame.
+    const delay = 1000; // simple delay in ms between search input ingestion.
+    if(inputPause) return;
     setInputPause(true);
     setTimeout(() => {
       setInputPause(false);
@@ -48,40 +50,29 @@ function SearchBar({props}: {props: SearchBarPropsType}){
   },[query])
 
   React.useEffect(()=>{
-    if( inputPause ) return;
-    console.log(query)
-    setLoading(true);
-    const response = giphyController.get(query);
-    response
-      .then((result)=>{
-        setResponse(result || undefined);
-      })
-      .catch((e)=>{
-        console.error(e);
-      })
-      .finally(()=>{
-        setLoading(false);
-      })
-    ;
-
+    (async ()=>{
+      if( inputPause ) return;
+      setLoading(true);
+      const response = await giphyController.get(query);
+      setResponse(response);
+      setLoading(false);
+    })();
   },[inputPause])
 
   return(
-  <div className="giphySearchBar">
-    <Search>
-      <SearchIconWrapper>
-        <SearchIcon />
-      </SearchIconWrapper>
-      <StyledInputBase
-        placeholder="Search GIF…"
-        inputProps={{
-          'aria-label': 'search gif',
-         }}
-        fullWidth={true}
-        onChange={(e)=>{setQuery(e.target.value)}}
-      />
-    </Search>
-  </div>
+  <Styled.Search className="giphySearchBar">
+    <Styled.SearchIconWrapper>
+      <SearchIcon />
+    </Styled.SearchIconWrapper>
+    <Styled.StyledInputBase
+      placeholder="Search GIF…"
+      inputProps={{
+        'aria-label': 'search gif',
+        }}
+      fullWidth={true}
+      onChange={(e)=>{setQuery(e.target.value)}}
+    />
+  </Styled.Search>
   )
 }
 
@@ -94,9 +85,9 @@ function GifDeck(){
     )
   })
   return (
-    <div className="gifDeck">
+    <Styled.GifDeck className="gifDeck">
       {gifTiles}
-    </div>
+    </Styled.GifDeck>
   )
 }
 
@@ -126,43 +117,64 @@ function GifTile({props}: {props: GifTilePropsType, key: string}){
   )
 }
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  border: "solid 1px black",
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(3),
-    width: 'auto',
-  },
-}))
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
+const Styled = {
+  Search: styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    border: "solid 1px black",
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-  },
-}));
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(3),
+      width: 'auto',
+    },
+  })),
+  SearchIconWrapper: styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  })),
+  StyledInputBase: styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      transition: theme.transitions.create('width'),
+      width: '100%',
+      [theme.breakpoints.up('md')]: {
+        width: '20ch',
+      },
+    },
+  })),
+  GifDeck: styled('div')(({ theme }) => ({
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: '100%',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(3),
+      width: 'auto',
+    },
+    marginTop: theme.spacing(2),
+    columnGap: 10,
+  }))
+}
+

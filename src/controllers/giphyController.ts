@@ -56,7 +56,6 @@ export const giphyController = {
   get: async (query: string | undefined): Promise<giphyResponseType | undefined>=>{
     const queryURL = toQueryURL(query);
     if (!queryURL) return undefined;
-    console.log(queryURL);
     try {
       const response = await axios.get(queryURL);
       return response.data as giphyResponseType;
