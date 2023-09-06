@@ -2,9 +2,14 @@
 
 A *very* simple Baseline js app to search gifs using Giphy API.
 
-Keeping it simple, it only fetches the first 5 images. Pagination *not ~~yet~~* supported
 
 Deployment (staging only): https://d2ulg1ekqqetoe.cloudfront.net/
+
+## Keeping it *really* simple
+
+- It only fetches the first 5 images. Pagination *not ~~yet~~* supported
+- Ugly
+- Query updates in `1s frames` rather than `1s from not-typing`.
 
 ---
 
